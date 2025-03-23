@@ -17,8 +17,9 @@
  * '01 Jan 1970 00:00:00 UTC' => 0
  * '04 Dec 1995 00:12:00 UTC' => 818035920000
  */
-function dateToTimestamp(/* date */) {
-  throw new Error('Not implemented');
+function dateToTimestamp(date) {
+  const dateDate = new Date(date);
+  return dateDate.getTime();
 }
 
 /**
@@ -31,8 +32,13 @@ function dateToTimestamp(/* date */) {
  * Date(2023, 5, 1, 8, 20, 55) => '08:20:55'
  * Date(2015, 10, 20, 23, 15, 1) => '23:15:01'
  */
-function getTime(/* date */) {
-  throw new Error('Not implemented');
+function getTime(date) {
+  const [hours, minutes, seconds] = [
+    `${date.getHours()}`.padStart(2, '0'),
+    `${date.getMinutes()}`.padStart(2, '0'),
+    `${date.getSeconds()}`.padStart(2, '0'),
+  ];
+  return `${hours}:${minutes}:${seconds}`;
 }
 
 /**
@@ -46,8 +52,18 @@ function getTime(/* date */) {
  * '03 Dec 1995 00:12:00 UTC' => 'Sunday'
  * '2024-01-30T00:00:00.000Z' => 'Tuesday'
  */
-function getDayName(/* date */) {
-  throw new Error('Not implemented');
+function getDayName(date) {
+  const myDate = new Date(date);
+  const days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+  return days[myDate.getUTCDay()];
 }
 
 /**
@@ -61,8 +77,12 @@ function getDayName(/* date */) {
  * Date('2024-02-13T00:00:00Z') => Date('2024-02-16T00:00:00Z')
  * Date('2024-02-16T00:00:00Z') => Date('2024-02-23T00:00:00Z')
  */
-function getNextFriday(/* date */) {
-  throw new Error('Not implemented');
+function getNextFriday(date) {
+  const dateDate = new Date(date);
+  const day = dateDate.getUTCDay();
+  const mult = day < 5 ? 5 - day : 5 + (7 - day);
+  const currentTime = dateDate.getTime();
+  return new Date(currentTime + 86400000 * mult);
 }
 
 /**
@@ -76,8 +96,15 @@ function getNextFriday(/* date */) {
  * 1, 2024 => 31
  * 2, 2024 => 29
  */
-function getCountDaysInMonth(/* month, year */) {
-  throw new Error('Not implemented');
+function getCountDaysInMonth(month, year) {
+  let date = new Date(year, month - 1);
+  let date2 = new Date(year, month);
+  if (month === 12) {
+    date = new Date(year, month - 1);
+    date2 = new Date(year + 1, 0);
+  }
+  const res = date2.getTime() - date.getTime();
+  return Math.ceil(res / 86400000);
 }
 
 /**
@@ -91,8 +118,11 @@ function getCountDaysInMonth(/* month, year */) {
  * '2024-02-01T00:00:00.000Z', '2024-02-02T00:00:00.000Z'  => 2
  * '2024-02-01T00:00:00.000Z', '2024-02-12T00:00:00.000Z'  => 12
  */
-function getCountDaysOnPeriod(/* dateStart, dateEnd */) {
-  throw new Error('Not implemented');
+function getCountDaysOnPeriod(dateStart, dateEnd) {
+  const start = new Date(dateStart);
+  const end = new Date(dateEnd);
+  const res = end - start;
+  return res / 86400000 + 1;
 }
 
 /**
@@ -112,8 +142,11 @@ function getCountDaysOnPeriod(/* dateStart, dateEnd */) {
  * '2024-02-02', { start: '2024-02-02', end: '2024-03-02' } => true
  * '2024-02-10', { start: '2024-02-02', end: '2024-03-02' } => true
  */
-function isDateInPeriod(/* date, period */) {
-  throw new Error('Not implemented');
+function isDateInPeriod(date, period) {
+  const myDate = new Date(date);
+  const start = new Date(period.start);
+  const end = new Date(period.end);
+  return myDate >= start && myDate <= end;
 }
 
 /**
@@ -127,8 +160,20 @@ function isDateInPeriod(/* date, period */) {
  * '1999-01-05T02:20:00.000Z' => '1/5/1999, 2:20:00 AM'
  * '2010-12-15T22:59:00.000Z' => '12/15/2010, 10:59:00 PM'
  */
-function formatDate(/* date */) {
-  throw new Error('Not implemented');
+function formatDate(date) {
+  const myDate = new Date(date);
+  const [year, month, day, hour, minutes, seconds, pmAm] = [
+    myDate.getUTCFullYear(),
+    myDate.getUTCMonth() + 1,
+    myDate.getUTCDate(),
+    myDate.getUTCHours() <= 12
+      ? myDate.getUTCHours()
+      : myDate.getUTCHours() - 12,
+    `${myDate.getUTCMinutes()}`.padStart(2, '0'),
+    `${myDate.getUTCSeconds()}`.padStart(2, '0'),
+    myDate.getUTCHours() >= 12 ? 'PM' : 'AM',
+  ];
+  return `${month}/${day}/${year}, ${hour}:${minutes}:${seconds} ${pmAm}`;
 }
 
 /**
@@ -143,8 +188,17 @@ function formatDate(/* date */) {
  * 12, 2023 => 10
  * 1, 2024 => 8
  */
-function getCountWeekendsInMonth(/* month, year */) {
-  throw new Error('Not implemented');
+function getCountWeekendsInMonth(month, year) {
+  let count = 0;
+  let day = 1;
+  const date = new Date(year, month - 1);
+  const dateEnd = new Date(year, month);
+  while (date < dateEnd) {
+    if (date.getDay() === 0 || date.getDay() === 6) count += 1;
+    day += 1;
+    date.setDate(day);
+  }
+  return count;
 }
 
 /**
@@ -160,8 +214,18 @@ function getCountWeekendsInMonth(/* month, year */) {
  * Date(2024, 0, 31) => 5
  * Date(2024, 1, 23) => 8
  */
-function getWeekNumberByDate(/* date */) {
-  throw new Error('Not implemented');
+function getWeekNumberByDate(date) {
+  const myDate = new Date(date);
+  const year = myDate.getUTCFullYear();
+  const start = new Date(Date.UTC(year, 0));
+  const firstDay = start.getUTCDay();
+  let offset;
+  if (firstDay === 0) offset = -1;
+  else if (firstDay <= 4) offset = firstDay - 1;
+  else if (firstDay > 4) offset = firstDay - 8;
+  const offsetValue = offset * 86400000;
+  const value = myDate - start + offsetValue;
+  return Math.floor(value / 604800000) + 1;
 }
 
 /**
@@ -175,8 +239,17 @@ function getWeekNumberByDate(/* date */) {
  * Date(2024, 0, 13) => Date(2024, 8, 13)
  * Date(2023, 1, 1) => Date(2023, 9, 13)
  */
-function getNextFridayThe13th(/* date */) {
-  throw new Error('Not implemented');
+function getNextFridayThe13th(date) {
+  const myDate = new Date(date);
+  let result;
+  while (!result) {
+    if (myDate.getDay() === 5 && myDate.getDate() === 13) {
+      result = new Date(myDate);
+      break;
+    }
+    myDate.setDate(myDate.getDate() + 1);
+  }
+  return result;
 }
 
 /**
@@ -190,8 +263,13 @@ function getNextFridayThe13th(/* date */) {
  * Date(2024, 5, 1) => 2
  * Date(2024, 10, 10) => 4
  */
-function getQuarter(/* date */) {
-  throw new Error('Not implemented');
+function getQuarter(date) {
+  const num = date.getMonth() + 1;
+  let result;
+  for (let n = 1; n * 3 <= 12; n += 1) {
+    if (num >= n * 3 - 2 && num <= n * 3) result = n;
+  }
+  return result;
 }
 
 /**
